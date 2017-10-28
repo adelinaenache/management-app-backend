@@ -192,18 +192,37 @@ questions[3].push({
         'b. The scrum master suggests splitting the functionality between the developers and then each of them will present. No impact',
         'c. The scrum master will present himself, because he knows the business flow of the application. No impact']
 });
-
+let localQuestions = {};
+let gotLocal = false;
 router.post('/new', async (req, res, next) => {
     let plannings = req.body.plannings;
-    let project_id = req.body.project_id;
+    let projectId = req.body.project_id;
     let project;
 
-    await es.getById(project_id, 'projects').then(res => {
+    await es.getById(projectId, 'projects').then(res => {
         project = res._source;
     });
 
     //project.currentMetrics = project.metrics;
     project.currentSprint = project.currentSprint + 1;
+    if (gotLocal) {
+        await es.getAll('unexpected').then(res1 => {
+            res1.forEach(res => {
+                localQuestions[res._id] = res._source;
+                let ansTitles = [];
+
+                res._source.answers.forEach(ans => {
+                    ansTitles.push(ans.title);
+                });
+
+                questions[type].push({
+                    title: res._source.text,
+                    id: res._source.id,
+                    actions: ansTitles
+                });
+            });
+        });
+    }
 
     let randomEvents = getRandom(5, 0);
     let shuff = [0, 1, 2, 3];
@@ -262,7 +281,7 @@ router.post('/new', async (req, res, next) => {
     project.metrics.motivation = roundNumber(project.metrics.motivation + inversePercentage(updatedMetrics.motivationProcent, project.metrics.motivation));
     project.metrics.customerSatisfaction = roundNumber(project.metrics.customerSatisfaction + inversePercentage(updatedMetrics.customerSatisfactionProcent, project.metrics.customerSatisfaction));
 
-    es.updateById(projectId, 'projects').then(() => {
+    es.updateById(projectId, { metrics: project.metrics }, 'projects').then(() => {
         res.status(200).json({
 
             'Sprint planning': events[0],
@@ -288,6 +307,12 @@ router.post('/event', async (req, res, next) => {
 
     updatedMetrics.customerSatisfaction = updatedMetrics.teamSatisfaction = updatedMetrics.velocityPoints = 0;
     updatedMetrics.motivation = 0;
+
+    if (localQuestions[questionId]) {
+        localQuestions[questionId].answers[answerId].affectedFields.forEach(field => {
+            updatedMetrics[field.field] += field.value;
+        });
+    }
 
     if (questionId === 7) {
         if (answerId == 1) {
@@ -398,7 +423,7 @@ router.post('/event', async (req, res, next) => {
 
 router.post('/end', async (req, res, next) => {
     //TODO: add sprint size to project
-    let projectId = req.body.projectId;
+    let projectId = req.body.project_id;
     let project;
 
     await es.getById(projectId, 'projects').then(res => {

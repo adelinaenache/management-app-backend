@@ -64,8 +64,9 @@ function getById(id, index) {
 
     return new Promise((resolve, reject) => {
         DBConnection.get(query, (error, response) => {
-           // console.log(error, response);
-           // console.log(query, error, query);
+            // console.log(error, response);
+            // console.log(query, error, query);
+            //console.log(response);
             if (error) {
                 return reject(error);
             } else {
@@ -75,12 +76,12 @@ function getById(id, index) {
     });
 }
 
-function updateById(id, object, index) { 
+function updateById(id, object, index) {
     let query = {
-        index: index, 
-        type: 'user', 
-        id: id, 
-        body: {doc: object}
+        index: index,
+        type: 'user',
+        id: id,
+        body: { doc: object }
     };
 
     return new Promise((resolve, reject) => {
@@ -94,8 +95,26 @@ function updateById(id, object, index) {
     });
 }
 
+function getAll(index) {
+    let query = {
+        index: index,
+        type: 'user'
+    }
+
+    return new Promise((resolve, reject) => {
+        DBConnection.search(query, (error, response) => {
+            if (error) {
+                return reject(error);
+            } else {
+                return resolve(response.hits.hits);
+            }
+        });
+
+    });
+}
 module.exports = {
-    saveToDb: saveToDb,
+    saveToDb,
     getById,
-    updateById
+    updateById,
+    getAll
 }
