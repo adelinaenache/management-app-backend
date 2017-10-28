@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+var fs = require('fs');
+var app = require('../app');
+var transport = process.env.TP_SSL ? require('https') : require('http');
+
+var server = null;
+var port = null;
+
+/**
+ * Create HTTP(S) server.
+ */
+
+if (process.env.TP_SSL) {
+	port = process.env.PORT || 443;
+	var privateKeyFile = process.env.KEY_SSL || require('../config.json').ssl_key_file;
+	var certificateFile = process.env.CERT_SSL || require('../config.json').ssl_cert_file;
+		if (!privateKeyFile && !certificateFile) {
+		throw new Error('SSL configuration is missing');
+	}
+
+	server = transport.createServer({key: fs.readFileSync(__dirname+'/'+privateKeyFile), cert: fs.readFileSync(__dirname+'/'+certificateFile)}, app);
+	server.listen(port);
+} else {
+	port = process.env.PORT || 3000;
+	server = transport.createServer(app);
+	server.listen(port);
+    console.log('Server created on port', port);
+}
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+app.set('port', port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+}

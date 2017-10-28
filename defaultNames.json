@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Rose Bennett", 
+        "gender": 0
+    }, 
+    {
+        "name": "Virginia Wallace", 
+        "gender": 0
+    }, 
+    {
+        "name": "Patrick Damon", 
+        "gender": 1
+    }, 
+    {
+        "name": "Sharon Otto", 
+        "gender": 0
+    }, 
+    {
+        "name": "Karen Wallace", 
+        "gender": 0
+    }, 
+    {
+        "name": "Joseph Buchanan", 
+        "gender": 1
+    }, 
+    {
+        "name": "Josephine Yopp", 
+        "gender": 0
+    },
+    {
+        "name": "Freddy Bullock", 
+        "gender": 1
+    }, 
+    {
+        "name": "Craig Davidson", 
+        "gender": 1
+    },
+    {
+        "name": "Virginia Seelye", 
+        "gender": 0
+    }
+
+]

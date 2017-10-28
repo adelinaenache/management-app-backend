@@ -1,0 +1,8 @@
+{
+
+    "elasticsearch": {
+		"host": "http://search-managementapp-pp6kpmjwhqhyh5qdsj4ngeu6oi.eu-central-1.es.amazonaws.com",
+		"apiVersion": "5.5",
+		"maxSockets": 300
+	}
+}

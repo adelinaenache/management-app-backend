@@ -1,0 +1,19 @@
+{
+  "name": "management_sys",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "dotenv": "^4.0.0",
+    "elasticsearch": "^13.3.1",
+    "express": "^4.16.2",
+    "moment": "^2.19.1",
+    "uuid": "^3.1.0"
+  }
+}
